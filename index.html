@@ -34,6 +34,12 @@
             font-size: 3em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .header h1:hover {
+            transform: scale(1.05);
         }
         
         .header p {
@@ -303,15 +309,35 @@
         .disney { background: #113cce; color: white; }
         .abema { background: #00d4ff; color: white; }
         
-        .available {
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-        
-        .affiliate-btn.available::after {
-            content: ' ✓';
-            color: #00ff00;
-            font-weight: bold;
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-by-name {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .daily-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .pagination button {
+                width: 100%;
+            }
         }
         
         .ai-recommendation {
@@ -339,33 +365,247 @@
             font-size: 12px;
         }
         
-        @media (max-width: 768px) {
-            .search-form {
-                grid-template-columns: 1fr;
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            gap: 10px;
+        }
+        
+        .pagination button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .pagination .current-page {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        }
+        
+        .pagination .page-info {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .advanced-ai-response {
+            background: linear-gradient(135deg, #667eea, #764ba2, #ff6b6b);
+            background-size: 400% 400%;
+            animation: gradientShift 6s ease infinite;
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        /* ポップなキャラクターアニメーション */
+        .floating-character {
+            position: fixed;
+            font-size: 2em;
+            z-index: 1000;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .character-popcorn {
+            top: 10%;
+            right: 5%;
+            animation-delay: 0s;
+        }
+        
+        .character-film {
+            top: 60%;
+            left: 2%;
+            animation-delay: 2s;
+        }
+        
+        .character-camera {
+            bottom: 20%;
+            right: 3%;
+            animation-delay: 4s;
+        }
+        
+        .character-ticket {
+            top: 40%;
+            right: 1%;
+            animation-delay: 1s;
+        }
+        
+        .character-star {
+            top: 80%;
+            left: 5%;
+            animation-delay: 3s;
+        }
+        
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.7;
             }
-            
-            .search-by-name {
-                flex-direction: column;
+            25% { 
+                transform: translateY(-20px) rotate(5deg);
+                opacity: 1;
             }
-            
-            .header h1 {
-                font-size: 2em;
+            50% { 
+                transform: translateY(-40px) rotate(-5deg);
+                opacity: 0.8;
             }
-            
-            .results-grid {
-                grid-template-columns: 1fr;
+            75% { 
+                transform: translateY(-20px) rotate(3deg);
+                opacity: 1;
             }
-            
-            .daily-grid {
-                grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .character-bounce {
+            animation: bounce 3s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
             }
+            40% {
+                transform: translateY(-30px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        .character-spin {
+            animation: spin 8s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* デコレーション要素 */
+        .decoration-sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .sparkle {
+            position: absolute;
+            color: #ffd700;
+            font-size: 1.5em;
+            animation: sparkle 4s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* キャラクター付きボタンのスタイル強化 */
+        .search-btn::before {
+            content: '🎬';
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .name-search-btn::before {
+            content: '🔍';
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* エラー状態のスタイリング */
+        .no-description {
+            font-style: italic;
+            color: #999;
+            background: linear-gradient(45deg, #f0f0f0, #e8e8e8);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #ddd;
+        }
+        
+        /* ボタン非表示時のスタイル */
+        .affiliate-btn.hidden {
+            display: none !important;
+        }
+        
+        .affiliate-links:empty::after {
+            content: '📺 配信情報を確認中...';
+            color: #999;
+            font-style: italic;
+            padding: 8px;
+            display: block;
+        }
+        
+        .advanced-ai-response h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ai-personality {
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .ai-analysis {
+            line-height: 1.7;
+            font-size: 1.05em;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- フローティングキャラクター -->
+        <div class="floating-character character-popcorn">🍿</div>
+        <div class="floating-character character-film character-spin">🎞️</div>
+        <div class="floating-character character-camera character-bounce">🎥</div>
+        <div class="floating-character character-ticket">🎫</div>
+        <div class="floating-character character-star">⭐</div>
+        
+        <!-- デコレーション -->
+        <div class="decoration-sparkles">
+            <div class="sparkle" style="top: 15%; left: 10%; animation-delay: 0s;">✨</div>
+            <div class="sparkle" style="top: 25%; right: 15%; animation-delay: 1s;">🌟</div>
+            <div class="sparkle" style="top: 45%; left: 20%; animation-delay: 2s;">💫</div>
+            <div class="sparkle" style="bottom: 30%; right: 25%; animation-delay: 3s;">✨</div>
+            <div class="sparkle" style="bottom: 15%; left: 30%; animation-delay: 1.5s;">🌟</div>
+        </div>
+        
         <div class="header">
-            <h1>🎬 CinemaAI</h1>
+            <h1 onclick="returnToTop()">🎬 CinemaAI</h1>
             <p>AIがあなたにピッタリの映画・アニメを厳選推薦</p>
         </div>
         
@@ -465,13 +705,21 @@
         </div>
         
         <div id="results" class="results-section">
-            <div id="aiRecommendation" class="ai-recommendation">
-                <h3>🤖 AI分析結果</h3>
-                <p id="aiComment">条件に最適な作品を世界中のデータベースから厳選しました！</p>
+            <div id="aiRecommendation" class="advanced-ai-response">
+                <h3>🤖 AI分析結果 <span style="font-size: 0.8em;">powered by CinemaAI Neural Network</span></h3>
+                <div id="aiPersonality" class="ai-personality"></div>
+                <div id="aiComment" class="ai-analysis">条件に最適な作品を世界中のデータベースから厳選しました！</div>
             </div>
             
             <div id="resultsGrid" class="results-grid">
                 <!-- 検索結果がここに表示される -->
+            </div>
+            
+            <!-- ページネーション -->
+            <div id="pagination" class="pagination" style="display: none;">
+                <button id="prevPage" onclick="changePage(-1)">« 前のページ</button>
+                <div id="pageInfo" class="page-info">1 / 1</div>
+                <button id="nextPage" onclick="changePage(1)">次のページ »</button>
             </div>
         </div>
     </div>
@@ -648,7 +896,179 @@
             { title: "300 <スリーハンドレッド>", year: "2006", rating: "7.6", description: "スパルタの300人の兵士の戦いを描いた壮絶なアクション映画。", source: "Featured" }
         ];
 
+        // グローバル変数
         let apiWorking = false;
+        let currentPage = 1;
+        let totalPages = 1;
+        let allResults = [];
+        const itemsPerPage = 30;
+        
+        // 高度なAI応答生成システム
+        class CinemaAI {
+            constructor() {
+                this.personalities = [
+                    { name: "映画評論家AI", emoji: "🎭", style: "analytical" },
+                    { name: "エンタメ愛好家AI", emoji: "🌟", style: "enthusiastic" },
+                    { name: "カジュアル推薦AI", emoji: "😊", style: "friendly" },
+                    { name: "シネマコンシェルジュAI", emoji: "🎩", style: "sophisticated" },
+                    { name: "アニメ専門AI", emoji: "🎌", style: "otaku" }
+                ];
+                this.currentPersonality = this.personalities[0];
+            }
+            
+            selectPersonality(searchType, genre, contentType) {
+                if (contentType === 'anime' || genre === '16') {
+                    this.currentPersonality = this.personalities[4]; // アニメ専門AI
+                } else if (searchType === 'search') {
+                    this.currentPersonality = this.personalities[1]; // エンタメ愛好家AI
+                } else if (genre === '18') {
+                    this.currentPersonality = this.personalities[3]; // シネマコンシェルジュAI
+                } else {
+                    this.currentPersonality = this.personalities[Math.floor(Math.random() * 3)];
+                }
+            }
+            
+            generateAdvancedResponse(results, searchContext) {
+                this.selectPersonality(searchContext.type, searchContext.genre, searchContext.contentType);
+                
+                const personality = this.currentPersonality;
+                const analysis = this.analyzeResults(results, searchContext);
+                const commentary = this.generateCommentary(analysis, searchContext);
+                
+                return {
+                    personality: `${personality.emoji} ${personality.name}`,
+                    response: commentary
+                };
+            }
+            
+            analyzeResults(results, context) {
+                const analysis = {
+                    totalCount: results.length,
+                    averageRating: 0,
+                    yearRange: { min: 9999, max: 0 },
+                    genres: new Set(),
+                    topRated: null,
+                    oldestClassic: null,
+                    newestRelease: null
+                };
+                
+                let ratingSum = 0;
+                let ratingCount = 0;
+                
+                results.forEach(item => {
+                    // 評価の分析
+                    const rating = parseFloat(item.rating);
+                    if (!isNaN(rating)) {
+                        ratingSum += rating;
+                        ratingCount++;
+                        
+                        if (!analysis.topRated || rating > parseFloat(analysis.topRated.rating)) {
+                            analysis.topRated = item;
+                        }
+                    }
+                    
+                    // 年代の分析
+                    const year = parseInt(item.year);
+                    if (!isNaN(year)) {
+                        analysis.yearRange.min = Math.min(analysis.yearRange.min, year);
+                        analysis.yearRange.max = Math.max(analysis.yearRange.max, year);
+                        
+                        if (!analysis.oldestClassic || year < parseInt(analysis.oldestClassic.year)) {
+                            analysis.oldestClassic = item;
+                        }
+                        
+                        if (!analysis.newestRelease || year > parseInt(analysis.newestRelease.year)) {
+                            analysis.newestRelease = item;
+                        }
+                    }
+                });
+                
+                analysis.averageRating = ratingCount > 0 ? (ratingSum / ratingCount).toFixed(1) : 0;
+                
+                return analysis;
+            }
+            
+            generateCommentary(analysis, context) {
+                const templates = this.getTemplatesByPersonality(this.currentPersonality.style);
+                const template = templates[Math.floor(Math.random() * templates.length)];
+                
+                return this.fillTemplate(template, analysis, context);
+            }
+            
+            getTemplatesByPersonality(style) {
+                const templates = {
+                    analytical: [
+                        "今回の検索結果を詳細に分析したところ、{count}本の作品が条件に合致しました。平均評価は{avgRating}という高水準を維持しており、特に「{topRated}」は評価{topRatedScore}と傑出しています。{yearAnalysis}これらの作品群は、あなたの嗜好に確実にマッチする良質なコンテンツと言えるでしょう。",
+                        "データベース分析の結果、{count}作品を抽出しました。注目すべきは平均評価{avgRating}という数値で、これは一般的な作品群を大きく上回る品質を示しています。{specialHighlight}映画選択の指標として、これらの作品は間違いなく推薦に値します。"
+                    ],
+                    enthusiastic: [
+                        "わあ！本当に素晴らしい{count}本の作品が見つかりました！✨ どれも平均評価{avgRating}以上の超おすすめ作品ばかりです！特に「{topRated}」なんて評価{topRatedScore}の名作中の名作ですよ～🎉 {yearAnalysis}きっと素敵な時間を過ごせること間違いなしです！",
+                        "すごい発見です！{count}本もの魅力的な作品がズラリ！🌟 しかも平均評価{avgRating}という驚異的な数字！{specialHighlight}どの作品を選んでも最高のエンターテイメント体験が待っています！"
+                    ],
+                    friendly: [
+                        "{count}本のおすすめ作品を見つけました！😊 どれも評価{avgRating}以上の人気作品で、きっと楽しんでもらえると思います。{specialHighlight}{yearAnalysis}気になる作品があったら、ぜひチェックしてみてくださいね！",
+                        "こんにちは！{count}作品をピックアップしました！平均評価{avgRating}という高評価作品ばかりなので、ハズレはないと思います。{topRated}」は特に評価が高くて、多くの人に愛されている作品です。ゆっくり選んでみてください！"
+                    ],
+                    sophisticated: [
+                        "お客様のご要望に基づき、厳選された{count}作品をご提案させていただきます。これらの作品は平均評価{avgRating}という卓越した品質を誇り、映画愛好家の皆様からも高い評価を得ております。{specialHighlight}{yearAnalysis}どちらの作品も、洗練された映画体験をお約束いたします。",
+                        "本日は{count}本の珠玉の作品をセレクトいたしました。平均評価{avgRating}という数値が示すとおり、いずれも映画史に名を刻む秀作ばかりです。{topRated}」は特に評価{topRatedScore}を獲得した傑作として、強くお勧めいたします。"
+                    ],
+                    otaku: [
+                        "おお〜！{count}本の神作品を発掘しました！(｀・ω・´) 平均評価{avgRating}とか、もはや殿堂入りレベルですよ！特に「{topRated}」は評価{topRatedScore}の伝説的作品！{specialHighlight}{yearAnalysis}どれも推しになること間違いなしですッ！",
+                        "ガチで{count}本の覇権作品が集まりました！✨ 平均評価{avgRating}って、もうこれ神アニメの証拠じゃないですか！{topRated}」なんて評価{topRatedScore}の絶対的王者ですし...！{yearAnalysis}全部見たくなっちゃいますね〜！"
+                    ]
+                };
+                
+                return templates[style] || templates.friendly;
+            }
+            
+            fillTemplate(template, analysis, context) {
+                const yearAnalysis = this.generateYearAnalysis(analysis);
+                const specialHighlight = this.generateSpecialHighlight(analysis, context);
+                
+                return template
+                    .replace('{count}', analysis.totalCount)
+                    .replace('{avgRating}', analysis.averageRating)
+                    .replace('{topRated}', analysis.topRated?.title || '名作')
+                    .replace('{topRatedScore}', analysis.topRated?.rating || '高評価')
+                    .replace('{yearAnalysis}', yearAnalysis)
+                    .replace('{specialHighlight}', specialHighlight);
+            }
+            
+            generateYearAnalysis(analysis) {
+                if (analysis.yearRange.min === 9999) return '';
+                
+                const span = analysis.yearRange.max - analysis.yearRange.min;
+                if (span > 20) {
+                    return `${analysis.yearRange.min}年から${analysis.yearRange.max}年まで、幅広い年代の作品が揃っています。`;
+                } else if (span > 10) {
+                    return `${analysis.yearRange.min}年代から${analysis.yearRange.max}年代の作品中心で、時代を超えた名作が含まれています。`;
+                } else {
+                    return `比較的新しい${analysis.yearRange.min}年〜${analysis.yearRange.max}年の作品が中心です。`;
+                }
+            }
+            
+            generateSpecialHighlight(analysis, context) {
+                const highlights = [];
+                
+                if (analysis.topRated && parseFloat(analysis.topRated.rating) > 8.5) {
+                    highlights.push(`評価9.0超えの超傑作も含まれています！`);
+                }
+                
+                if (analysis.oldestClassic && parseInt(analysis.oldestClassic.year) < 1980) {
+                    highlights.push(`クラシック映画の名作「${analysis.oldestClassic.title}」も発見！`);
+                }
+                
+                if (analysis.newestRelease && parseInt(analysis.newestRelease.year) >= 2023) {
+                    highlights.push(`最新の${analysis.newestRelease.year}年作品「${analysis.newestRelease.title}」も要チェック！`);
+                }
+                
+                return highlights.length > 0 ? highlights[0] + ' ' : '';
+            }
+        }
+        
+        // CinemaAIインスタンス
+        const cinemaAI = new CinemaAI();
 
         // 今日の日付を表示
         function setTodayDate() {
@@ -948,13 +1368,68 @@
             );
         }
 
-        // アニメかどうかの判定
-        function isLikelyAnime(query) {
-            const animeKeywords = [
-                'アニメ', '劇場版', '映画版', 'の刃', '進撃', '呪術', 'ワンピース', 
-                'ナルト', 'ドラゴンボール', 'ジブリ', 'エヴァ', 'ガンダム'
-            ];
-            return animeKeywords.some(keyword => query.includes(keyword));
+        // キャラクターアニメーション制御
+        function initializeCharacters() {
+            const characters = document.querySelectorAll('.floating-character');
+            const sparkles = document.querySelectorAll('.sparkle');
+            
+            // キャラクターにランダムな動きを追加
+            characters.forEach((char, index) => {
+                setTimeout(() => {
+                    char.style.animationDelay = `${Math.random() * 2}s`;
+                    
+                    // 定期的にアニメーションクラスを変更
+                    setInterval(() => {
+                        const animations = ['float', 'bounce', 'spin'];
+                        const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+                        char.style.animation = `${randomAnimation} ${3 + Math.random() * 3}s ease-in-out infinite`;
+                    }, 10000 + Math.random() * 5000);
+                }, index * 1000);
+            });
+            
+            // スパークルエフェクトの制御
+            sparkles.forEach((sparkle, index) => {
+                sparkle.style.animationDelay = `${Math.random() * 4}s`;
+                sparkle.style.animationDuration = `${3 + Math.random() * 2}s`;
+            });
+        }
+        
+        // 検索時の特別エフェクト
+        function triggerSearchEffect() {
+            const characters = document.querySelectorAll('.floating-character');
+            
+            characters.forEach(char => {
+                char.style.animation = 'bounce 0.5s ease-in-out';
+                setTimeout(() => {
+                    char.style.animation = 'float 6s ease-in-out infinite';
+                }, 500);
+            });
+            
+            // 新しいスパークルを一時的に追加
+            createTemporarySparkles();
+        }
+        
+        function createTemporarySparkles() {
+            const container = document.querySelector('.decoration-sparkles');
+            const sparkleEmojis = ['✨', '🌟', '💫', '⭐', '🎉'];
+            
+            for (let i = 0; i < 5; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDuration = '2s';
+                
+                container.appendChild(sparkle);
+                
+                // 2秒後に削除
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.parentNode.removeChild(sparkle);
+                    }
+                }, 2000);
+            }
         }
 
         // 簡易英語翻訳
@@ -1013,13 +1488,28 @@
             searchByName();
         }
 
-        // TMDB データフォーマット
+        // TMDB データフォーマット（説明文改善版）
         function formatTMDBMovie(movie) {
+            let description = movie.overview || '';
+            
+            // 「説明が利用できません」等の無意味な説明を改善
+            if (!description || description.trim() === '' || 
+                description.includes('説明が利用できません') ||
+                description.includes('No overview available') ||
+                description.length < 10) {
+                description = generateAlternativeDescription(movie.title, movie.genre_ids || []);
+            }
+            
+            // 説明文の長さを調整
+            if (description.length > 120) {
+                description = description.substring(0, 120) + '...';
+            }
+            
             return {
                 title: movie.title || movie.original_title,
                 year: movie.release_date ? movie.release_date.substring(0, 4) : 'N/A',
                 rating: movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A',
-                description: movie.overview || '説明が利用できません',
+                description: description,
                 poster: movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null,
                 tmdbId: movie.id,
                 source: 'TMDB'
@@ -1027,15 +1517,77 @@
         }
 
         function formatTMDBTV(tv) {
+            let description = tv.overview || '';
+            
+            if (!description || description.trim() === '' || 
+                description.includes('説明が利用できません') ||
+                description.includes('No overview available') ||
+                description.length < 10) {
+                description = generateAlternativeDescription(tv.name, tv.genre_ids || [], 'tv');
+            }
+            
+            if (description.length > 120) {
+                description = description.substring(0, 120) + '...';
+            }
+            
             return {
                 title: tv.name || tv.original_name,
                 year: tv.first_air_date ? tv.first_air_date.substring(0, 4) : 'N/A',
                 rating: tv.vote_average ? tv.vote_average.toFixed(1) : 'N/A',
-                description: tv.overview || '説明が利用できません',
+                description: description,
                 poster: tv.poster_path ? `${IMAGE_BASE_URL}${tv.poster_path}` : null,
                 tmdbId: tv.id,
                 source: 'TMDB'
             };
+        }
+        
+        // 代替説明文を生成
+        function generateAlternativeDescription(title, genreIds = [], mediaType = 'movie') {
+            const genreMap = {
+                28: 'アクション', 35: 'コメディ', 18: 'ドラマ', 10749: 'ロマンス',
+                27: 'ホラー', 878: 'SF', 14: 'ファンタジー', 16: 'アニメーション',
+                53: 'スリラー', 12: 'アドベンチャー', 80: 'クライム', 99: 'ドキュメンタリー'
+            };
+            
+            const genres = genreIds.map(id => genreMap[id]).filter(Boolean);
+            const mediaText = mediaType === 'tv' ? 'TVシリーズ' : '映画';
+            
+            // タイトルベースの特別説明
+            const specialDescriptions = {
+                'アナと雪の女王': 'エルサとアナの姉妹愛を描いたディズニーの名作ミュージカル。',
+                'トイ・ストーリー': 'おもちゃたちの冒険を描いたピクサーの革新的なCGアニメーション。',
+                '君の名は。': '時空を超えた切ない恋愛を描く新海誠監督の代表作。',
+                '千と千尋の神隠し': '神々の世界で成長する少女を描いたジブリの最高傑作。',
+                'アベンジャーズ': 'マーベルヒーローが集結する史上最大のスーパーヒーロー映画。'
+            };
+            
+            // 特別説明があればそれを使用
+            for (const [key, desc] of Object.entries(specialDescriptions)) {
+                if (title.includes(key)) {
+                    return desc;
+                }
+            }
+            
+            // ジャンルベースの説明生成
+            if (genres.length > 0) {
+                const genreText = genres.slice(0, 2).join('・');
+                const templates = [
+                    `${genreText}ジャンルの話題作。多くの観客に愛され続けている${mediaText}です。`,
+                    `${genreText}要素が魅力的な作品。評価の高い${mediaText}として知られています。`,
+                    `${genreText}の傑作として評価される${mediaText}。見応えのある内容です。`
+                ];
+                return templates[Math.floor(Math.random() * templates.length)];
+            }
+            
+            // デフォルトの魅力的な説明
+            const defaultTemplates = [
+                `多くの観客に愛される話題の${mediaText}作品です。`,
+                `評価の高い${mediaText}として広く知られています。`,
+                `見応えのある内容で人気を集める${mediaText}です。`,
+                `注目を集める話題の${mediaText}作品となっています。`
+            ];
+            
+            return defaultTemplates[Math.floor(Math.random() * defaultTemplates.length)];
         }
 
         // 条件検索
@@ -1147,22 +1699,127 @@
             return results.sort(() => Math.random() - 0.5);
         }
 
-        function displayResults(results, contentType, genre, year, customTitle = null) {
-            const aiComment = customTitle || generateAIComment(results.length, contentType, genre, year);
-            document.getElementById('aiComment').textContent = aiComment;
+        // TOPページに戻る機能
+        function returnToTop() {
+            // 検索フォームをクリア
+            document.getElementById('movieNameInput').value = '';
+            document.getElementById('contentType').value = 'all';
+            document.getElementById('genre').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('rating').value = '';
+            
+            // 結果をクリア
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('pagination').style.display = 'none';
+            
+            // ページ情報をリセット
+            currentPage = 1;
+            totalPages = 1;
+            allResults = [];
+            
+            // 今日のAI推薦を再生成
+            generateDailyRecommendations();
+            
+            // トップにスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 初期表示を再実行
+            setTimeout(async () => {
+                const initialResults = apiWorking ? 
+                    await searchTMDB('all', '', '', '') :
+                    getFallbackResults('all', '', '', '');
+                
+                allResults = initialResults;
+                currentPage = 1;
+                totalPages = Math.ceil(allResults.length / itemsPerPage);
+                
+                const aiResponse = cinemaAI.generateAdvancedResponse(
+                    allResults.slice(0, 6), 
+                    { type: 'initial', contentType: 'all', genre: '' }
+                );
+                
+                document.getElementById('aiPersonality').textContent = aiResponse.personality;
+                document.getElementById('aiComment').textContent = aiResponse.response;
+                
+                displayCurrentPage();
+                document.getElementById('results').style.display = 'block';
+            }, 500);
+        }
+
+        // ページネーション機能
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                displayCurrentPage();
+                updatePaginationUI();
+                
+                // ページ移動時にトップにスクロール
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function displayCurrentPage() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, allResults.length);
+            const currentResults = allResults.slice(startIndex, endIndex);
             
             const resultsGrid = document.getElementById('resultsGrid');
             resultsGrid.innerHTML = '';
             
-            if (results.length === 0) {
-                resultsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;"><h3>該当する作品が見つかりませんでした</h3><p>別の条件で検索してみてください</p></div>';
-                return;
-            }
-            
-            results.slice(0, 12).forEach(item => {
+            currentResults.forEach(item => {
                 const movieCard = createMovieCard(item);
                 resultsGrid.appendChild(movieCard);
             });
+            
+            updatePaginationUI();
+        }
+
+        function updatePaginationUI() {
+            const pagination = document.getElementById('pagination');
+            const pageInfo = document.getElementById('pageInfo');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                pageInfo.textContent = `${currentPage} / ${totalPages} (${allResults.length}件中 ${(currentPage-1)*itemsPerPage + 1}-${Math.min(currentPage*itemsPerPage, allResults.length)}件目)`;
+                
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === totalPages;
+            } else {
+                pagination.style.display = 'none';
+            }
+        }
+
+        // 改良された結果表示関数
+        function displayResults(results, contentType, genre, year, customTitle = null) {
+            allResults = results;
+            currentPage = 1;
+            totalPages = Math.ceil(allResults.length / itemsPerPage);
+            
+            // 高度なAI応答を生成
+            const searchContext = {
+                type: customTitle ? 'search' : 'filter',
+                contentType: contentType,
+                genre: genre,
+                year: year,
+                query: customTitle
+            };
+            
+            const aiResponse = cinemaAI.generateAdvancedResponse(allResults, searchContext);
+            
+            document.getElementById('aiPersonality').textContent = aiResponse.personality;
+            document.getElementById('aiComment').textContent = customTitle || aiResponse.response;
+            
+            if (allResults.length === 0) {
+                const resultsGrid = document.getElementById('resultsGrid');
+                resultsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;"><h3>該当する作品が見つかりませんでした</h3><p>別の条件で検索してみてください</p></div>';
+                document.getElementById('pagination').style.display = 'none';
+            } else {
+                displayCurrentPage();
+            }
             
             document.getElementById('results').style.display = 'block';
         }
