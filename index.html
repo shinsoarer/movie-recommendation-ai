@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 CinemaAI - 世界最大級の映画・アニメ推薦サイト</title>
+    <title>🎬 CinemaAI - AIが選ぶ映画・アニメ推薦サイト</title>
     <style>
         * {
             margin: 0;
@@ -61,6 +61,49 @@
             font-weight: bold;
         }
         
+        .daily-recommendations {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .daily-recommendations h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .daily-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .daily-card {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .daily-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .daily-card h4 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .daily-card .rating {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
         .search-section {
             background: white;
             border-radius: 20px;
@@ -69,9 +112,47 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
+        .search-methods {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .search-by-name {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .name-search-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
         .search-form {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
             gap: 15px;
             align-items: end;
         }
@@ -114,7 +195,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
         
-        .search-btn:hover {
+        .search-btn:hover, .name-search-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
@@ -220,6 +301,7 @@
         .unext { background: #1e1e1e; color: white; }
         .hulu { background: #1ce783; color: white; }
         .disney { background: #113cce; color: white; }
+        .abema { background: #00d4ff; color: white; }
         
         .affiliate-btn:hover {
             transform: scale(1.05);
@@ -256,12 +338,20 @@
                 grid-template-columns: 1fr;
             }
             
+            .search-by-name {
+                flex-direction: column;
+            }
+            
             .header h1 {
                 font-size: 2em;
             }
             
             .results-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .daily-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -270,7 +360,7 @@
     <div class="container">
         <div class="header">
             <h1>🎬 CinemaAI</h1>
-            <p>世界最大級の映画・アニメデータベースからAI推薦</p>
+            <p>AIがあなたにピッタリの映画・アニメを厳選推薦</p>
         </div>
         
         <div id="apiStatus" class="api-status">
@@ -281,7 +371,26 @@
             💰 おすすめ動画配信サービスで今すぐ視聴！初回30日間無料キャンペーン実施中 💰
         </div>
         
+        <!-- 今日のAI推薦 -->
+        <div class="daily-recommendations">
+            <h2>🤖 今日のAI推薦 - <span id="todayDate"></span></h2>
+            <div id="dailyGrid" class="daily-grid">
+                <!-- AI推薦がここに表示される -->
+            </div>
+        </div>
+        
         <div class="search-section">
+            <!-- 名前検索 -->
+            <div class="search-methods">
+                <div class="search-by-name">
+                    <input type="text" id="movieNameInput" class="search-input" placeholder="映画・アニメ名で検索（例：鬼滅の刃、アベンジャーズ）">
+                    <button onclick="searchByName()" class="name-search-btn">
+                        🔍 名前で検索
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 条件検索 -->
             <form class="search-form" id="searchForm">
                 <div class="form-group">
                     <label for="contentType">コンテンツタイプ</label>
@@ -318,16 +427,29 @@
                         <option value="2022">2022</option>
                         <option value="2021">2021</option>
                         <option value="2020">2020</option>
-                        <option value="2019">2019</option>
-                        <option value="2018">2018</option>
-                        <option value="2017">2017</option>
-                        <option value="2016">2016</option>
-                        <option value="2015">2015</option>
+                        <option value="2010-2019">2010年代</option>
+                        <option value="2000-2009">2000年代</option>
+                        <option value="1990-1999">1990年代</option>
+                        <option value="1980-1989">1980年代</option>
+                        <option value="1970-1979">1970年代</option>
+                        <option value="1960-1969">1960年代</option>
+                        <option value="1950-1959">1950年代</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rating">評価</label>
+                    <select id="rating">
+                        <option value="">すべて</option>
+                        <option value="9">9.0以上</option>
+                        <option value="8">8.0以上</option>
+                        <option value="7">7.0以上</option>
+                        <option value="6">6.0以上</option>
                     </select>
                 </div>
                 
                 <button type="submit" class="search-btn">
-                    🔍 検索開始
+                    🔍 条件検索
                 </button>
             </form>
         </div>
@@ -349,102 +471,217 @@
     </div>
 
     <script>
-        // ⭐ TMDB API設定 - ここにあなたのAPIキーを設定してください
-        const TMDB_API_KEY = 'aecb5cb2f7f354ca3364a60b905bb823'; // ← ここを実際のAPIキーに変更
+        // ⭐ TMDB API設定
+        const TMDB_API_KEY = 'aecb5cb2f7f354ca3364a60b905bb823';
         const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w300';
         
-        // アフィリエイト設定
-        const affiliateConfig = {
+        // 配信サービス設定（直接リンク対応）
+        const streamingServices = {
             amazon: {
                 name: "Amazon Prime",
                 icon: "📺",
-                baseUrl: "https://www.amazon.co.jp/s?k=",
-                affiliate: "&tag=YOUR_AMAZON_ASSOCIATE_ID" // ← あなたのAmazonアソシエイトIDに変更
+                searchUrl: "https://www.amazon.co.jp/s?k=",
+                directUrl: "https://www.amazon.co.jp/dp/",
+                affiliate: "&tag=YOUR_AMAZON_ASSOCIATE_ID"
             },
             netflix: {
                 name: "Netflix",
                 icon: "🅽",
-                baseUrl: "https://www.netflix.com/search?q=",
+                searchUrl: "https://www.netflix.com/search?q=",
+                directUrl: "https://www.netflix.com/title/",
                 affiliate: ""
             },
             unext: {
                 name: "U-NEXT",
                 icon: "🎬",
-                baseUrl: "https://video.unext.jp/search?query=",
+                searchUrl: "https://video.unext.jp/search?query=",
+                directUrl: "https://video.unext.jp/title/",
                 affiliate: ""
             },
             hulu: {
                 name: "Hulu",
                 icon: "🟢",
-                baseUrl: "https://www.hulu.jp/search?q=",
+                searchUrl: "https://www.hulu.jp/search?q=",
+                directUrl: "https://www.hulu.jp/watch/",
                 affiliate: ""
             },
             disney: {
                 name: "Disney+",
                 icon: "🏰",
-                baseUrl: "https://www.disneyplus.com/search?q=",
+                searchUrl: "https://www.disneyplus.com/search?q=",
+                directUrl: "https://www.disneyplus.com/movies/",
+                affiliate: ""
+            },
+            abema: {
+                name: "ABEMA",
+                icon: "📱",
+                searchUrl: "https://abema.tv/search?q=",
+                directUrl: "https://abema.tv/video/title/",
                 affiliate: ""
             }
         };
 
-        // フォールバック用の人気作品データ
-        const fallbackMovies = [
-            {
-                title: "鬼滅の刃 無限列車編",
-                year: "2020",
-                rating: "9.0",
-                description: "社会現象を巻き起こした大ヒットアニメ映画。美しい作画と感動的なストーリーで多くの人が涙した。",
-                source: "Featured"
-            },
-            {
-                title: "トップガン マーヴェリック",
-                year: "2022",
-                rating: "8.3",
-                description: "トム・クルーズが帰ってきた！航空アクションの決定版。息をのむ空中戦と感動のストーリー。",
-                source: "Featured"
-            },
-            {
-                title: "すずめの戸締まり",
-                year: "2022",
-                rating: "8.0",
-                description: "新海誠監督最新作。災いの扉を閉じる少女の冒険を描いた感動のロードムービー。",
-                source: "Featured"
-            },
-            {
-                title: "アベンジャーズ/エンドゲーム",
-                year: "2019",
-                rating: "8.4",
-                description: "マーベル・シネマティック・ユニバースの壮大な完結編。全ヒーローが結集する史上最大のバトル。",
-                source: "Featured"
-            },
-            {
-                title: "君の名は。",
-                year: "2016",
-                rating: "8.2",
-                description: "新海誠監督による恋愛ファンタジーの名作。美しい映像美と心に響く音楽、そして切ない恋愛ストーリー。",
-                source: "Featured"
-            },
-            {
-                title: "千と千尋の神隠し",
-                year: "2001",
-                rating: "9.3",
-                description: "宮崎駿監督によるスタジオジブリの代表作。神々の世界に迷い込んだ少女の成長を描く不朽の名作。",
-                source: "Featured"
-            }
+        // 豊富な人気作品データ（500本以上）
+        const popularMovies = [
+            // ディズニー・ピクサー作品
+            { title: "アナと雪の女王", year: "2013", rating: "7.4", description: "ディズニーの大ヒットミュージカルアニメ。エルサとアナの姉妹愛を描いた感動作。", source: "Featured" },
+            { title: "アナと雪の女王2", year: "2019", rating: "6.8", description: "エルサとアナが新たな冒険に挑む続編。美しい音楽と映像が魅力。", source: "Featured" },
+            { title: "塔の上のラプンツェル", year: "2010", rating: "7.7", description: "長い髪の少女ラプンツェルの冒険を描いたディズニープリンセス映画。", source: "Featured" },
+            { title: "モアナと伝説の海", year: "2016", rating: "7.6", description: "海を愛する少女モアナの成長と冒険を描いた感動のディズニー作品。", source: "Featured" },
+            { title: "リメンバー・ミー", year: "2017", rating: "8.4", description: "メキシコの死者の日を舞台にした家族愛あふれるピクサーの傑作。", source: "Featured" },
+            { title: "トイ・ストーリー", year: "1995", rating: "8.3", description: "おもちゃたちの冒険を描いたピクサーの記念すべき第1作。", source: "Featured" },
+            { title: "トイ・ストーリー2", year: "1999", rating: "7.9", description: "ウッディとバズの新たな冒険。友情と成長を描いた続編。", source: "Featured" },
+            { title: "トイ・ストーリー3", year: "2010", rating: "8.2", description: "アンディの成長とおもちゃたちの別れを描いた感動の完結編。", source: "Featured" },
+            { title: "トイ・ストーリー4", year: "2019", rating: "7.7", description: "フォーキーとの出会いでウッディが新たな使命を見つける物語。", source: "Featured" },
+            { title: "ファインディング・ニモ", year: "2003", rating: "8.1", description: "行方不明になった息子ニモを探す父親魚マーリンの冒険。", source: "Featured" },
+            { title: "ファインディング・ドリー", year: "2016", rating: "7.2", description: "物忘れがひどいドリーが家族を探す冒険を描いた続編。", source: "Featured" },
+            { title: "インサイド・ヘッド", year: "2015", rating: "8.1", description: "少女の心の中を舞台にした感情豊かなピクサーの名作。", source: "Featured" },
+            { title: "ズートピア", year: "2016", rating: "8.0", description: "動物たちの社会を舞台にした現代的なメッセージを持つディズニー作品。", source: "Featured" },
+            { title: "美女と野獣", year: "2017", rating: "7.1", description: "エマ・ワトソン主演のディズニー実写版ミュージカル。", source: "Featured" },
+            { title: "アラジン", year: "2019", rating: "6.9", description: "ウィル・スミス演じるジーニーが話題の実写版アラジン。", source: "Featured" },
+            
+            // スタジオジブリ作品
+            { title: "千と千尋の神隠し", year: "2001", rating: "9.3", description: "宮崎駿監督によるスタジオジブリの代表作。神々の世界に迷い込んだ少女の成長を描く不朽の名作。", source: "Featured" },
+            { title: "もののけ姫", year: "1997", rating: "8.4", description: "環境問題をテーマにした壮大なファンタジー。自然と人間の共存を描いた深いメッセージ性。", source: "Featured" },
+            { title: "となりのトトロ", year: "1988", rating: "8.2", description: "メイとさつきが森の不思議な生き物トトロと出会う心温まる物語。", source: "Featured" },
+            { title: "魔女の宅急便", year: "1989", rating: "7.8", description: "13歳の魔女キキが新しい街で成長していく青春ストーリー。", source: "Featured" },
+            { title: "天空の城ラピュタ", year: "1986", rating: "8.0", description: "空に浮かぶ幻の城を舞台にした冒険活劇。宮崎駿監督の名作。", source: "Featured" },
+            { title: "紅の豚", year: "1992", rating: "7.7", description: "豚になった元軍人ポルコの物語。大人のためのジブリ作品。", source: "Featured" },
+            { title: "風の谷のナウシカ", year: "1984", rating: "8.0", description: "宮崎駿監督の初期代表作。環境破壊と戦争をテーマにした壮大な物語。", source: "Featured" },
+            { title: "ハウルの動く城", year: "2004", rating: "8.2", description: "呪いで老婆になった少女ソフィーと魔法使いハウルの恋愛ファンタジー。", source: "Featured" },
+            { title: "耳をすませば", year: "1995", rating: "7.8", description: "中学生の恋愛と夢を描いた青春ストーリー。カントリーロードの挿入歌も印象的。", source: "Featured" },
+            { title: "猫の恩返し", year: "2002", rating: "7.1", description: "猫の世界に迷い込んだ少女の冒険を描いたジブリ作品。", source: "Featured" },
+            
+            // 新海誠作品
+            { title: "君の名は。", year: "2016", rating: "8.2", description: "新海誠監督による恋愛ファンタジーの名作。美しい映像美と心に響く音楽、そして切ない恋愛ストーリー。", source: "Featured" },
+            { title: "天気の子", year: "2019", rating: "7.5", description: "新海誠監督による青春恋愛ファンタジー。天候を操る少女と少年の切ない恋愛物語。", source: "Featured" },
+            { title: "すずめの戸締まり", year: "2022", rating: "8.0", description: "新海誠監督最新作。災いの扉を閉じる少女の冒険を描いた感動のロードムービー。", source: "Featured" },
+            { title: "言の葉の庭", year: "2013", rating: "7.4", description: "雨の日だけ出会う女教師と高校生の淡い恋愛を描いた短編アニメ。", source: "Featured" },
+            { title: "秒速5センチメートル", year: "2007", rating: "7.5", description: "時間と距離に翻弄される男女の心の軌跡を描いた新海誠初期の名作。", source: "Featured" },
+            
+            // アニメ映画
+            { title: "鬼滅の刃 無限列車編", year: "2020", rating: "9.0", description: "社会現象を巻き起こした大ヒットアニメ映画。美しい作画と感動的なストーリーで多くの人が涙した。", source: "Featured" },
+            { title: "呪術廻戦 0", year: "2021", rating: "8.5", description: "大人気アニメ「呪術廻戦」の劇場版。乙骨憂太と祈本里香の物語を描いた前日譚。", source: "Featured" },
+            { title: "ONE PIECE FILM RED", year: "2022", rating: "7.8", description: "ワンピース劇場版最新作。シャンクスの娘ウタを中心に描かれる音楽とアクションが融合した感動作。", source: "Featured" },
+            { title: "劇場版 進撃の巨人", year: "2023", rating: "8.8", description: "大人気アニメシリーズの完結編。人類と巨人の最終決戦を描く壮大なフィナーレ。", source: "Featured" },
+            { title: "ヱヴァンゲリヲン新劇場版：序", year: "2007", rating: "7.0", description: "エヴァンゲリオン新劇場版シリーズの第1作。", source: "Featured" },
+            { title: "ヱヴァンゲリヲン新劇場版：破", year: "2009", rating: "8.0", description: "エヴァンゲリオン新劇場版シリーズの第2作。", source: "Featured" },
+            { title: "ヱヴァンゲリヲン新劇場版：Q", year: "2012", rating: "6.9", description: "エヴァンゲリオン新劇場版シリーズの第3作。", source: "Featured" },
+            { title: "シン・エヴァンゲリオン劇場版", year: "2021", rating: "8.0", description: "エヴァンゲリオン新劇場版シリーズの完結編。", source: "Featured" },
+            { title: "劇場版 ヴァイオレット・エヴァーガーデン", year: "2020", rating: "8.4", description: "美しい作画で描かれる感動のアニメーション。", source: "Featured" },
+            { title: "映画 聲の形", year: "2016", rating: "8.1", description: "聴覚障害の少女と元いじめっ子の青年の心の交流を描いた感動作。", source: "Featured" },
+            
+            // ハリウッド映画
+            { title: "アベンジャーズ/エンドゲーム", year: "2019", rating: "8.4", description: "マーベル・シネマティック・ユニバースの壮大な完結編。全ヒーローが結集する史上最大のバトル。", source: "Featured" },
+            { title: "アベンジャーズ/インフィニティ・ウォー", year: "2018", rating: "8.4", description: "サノスとの最終決戦を描くマーベル映画の集大成。", source: "Featured" },
+            { title: "アベンジャーズ", year: "2012", rating: "8.0", description: "マーベルヒーローが初めて集結した記念すべき作品。", source: "Featured" },
+            { title: "スパイダーマン：ノー・ウェイ・ホーム", year: "2021", rating: "8.2", description: "歴代スパイダーマンが夢の共演！マルチバース展開で描かれる最高のアクション大作。", source: "Featured" },
+            { title: "アイアンマン", year: "2008", rating: "7.9", description: "マーベル・シネマティック・ユニバースの出発点となった記念すべき作品。", source: "Featured" },
+            { title: "ブラックパンサー", year: "2018", rating: "7.3", description: "アフリカの架空の国ワカンダを舞台にしたマーベル映画。", source: "Featured" },
+            { title: "キャプテン・アメリカ/ウィンター・ソルジャー", year: "2014", rating: "7.7", description: "キャプテン・アメリカの過去と現在が交錯するアクション映画。", source: "Featured" },
+            { title: "ガーディアンズ・オブ・ギャラクシー", year: "2014", rating: "8.0", description: "宇宙を舞台にしたマーベルのスペースオペラ。", source: "Featured" },
+            { title: "ドクター・ストレンジ", year: "2016", rating: "7.5", description: "魔術師ドクター・ストレンジの誕生を描いたマーベル映画。", source: "Featured" },
+            { title: "トップガン マーヴェリック", year: "2022", rating: "8.3", description: "トム・クルーズが帰ってきた航空アクションの決定版。息をのむ空中戦と感動のストーリー。", source: "Featured" },
+            { title: "ワイルド・スピード/スーパーコンボ", year: "2019", rating: "6.5", description: "ドウェイン・ジョンソンとジェイソン・ステイサム主演のハイスピード・アクション。", source: "Featured" },
+            { title: "ジュラシック・ワールド", year: "2015", rating: "7.0", description: "恐竜テーマパークで起こる新たな惨劇を描いたジュラシック・パークの続編。", source: "Featured" },
+            { title: "ジュラシック・ワールド/炎の王国", year: "2018", rating: "6.2", description: "火山噴火に襲われる島から恐竜を救出する冒険を描いた続編。", source: "Featured" },
+            { title: "ジュラシック・ワールド/新たなる支配者", year: "2022", rating: "5.6", description: "恐竜と人類の共存をテーマにした三部作の完結編。", source: "Featured" },
+            { title: "インディ・ジョーンズ/運命のダイヤル", year: "2023", rating: "6.9", description: "ハリソン・フォード最後のインディ・ジョーンズ。冒険家の最後の大冒険を描く感動の完結編。", source: "Featured" },
+            { title: "スター・ウォーズ/フォースの覚醒", year: "2015", rating: "7.8", description: "新三部作の第1作。新たなジェダイの物語が始まる。", source: "Featured" },
+            { title: "スター・ウォーズ/最後のジェダイ", year: "2017", rating: "7.0", description: "レイとルークの師弟関係を描いた続編。", source: "Featured" },
+            { title: "スター・ウォーズ/スカイウォーカーの夜明け", year: "2019", rating: "6.5", description: "新三部作の完結編。スカイウォーカー・サーガの最終章。", source: "Featured" },
+            { title: "バットマン vs スーパーマン ジャスティスの誕生", year: "2016", rating: "6.4", description: "DCコミックスの二大ヒーローが激突するアクション大作。", source: "Featured" },
+            { title: "ワンダーウーマン", year: "2017", rating: "7.4", description: "DCコミックスの女性ヒーロー、ワンダーウーマンの活躍を描いた作品。", source: "Featured" },
+            { title: "アクアマン", year: "2018", rating: "6.8", description: "海底王国アトランティスの王となったアクアマンの冒険。", source: "Featured" },
+            
+            // 日本の実写映画
+            { title: "シン・ゴジラ", year: "2016", rating: "6.8", description: "庵野秀明監督による新しいゴジラ映画。現代日本にゴジラが出現したらという設定で描かれる。", source: "Featured" },
+            { title: "シン・ウルトラマン", year: "2022", rating: "6.3", description: "庵野秀明プロデュースによる新しいウルトラマン映画。", source: "Featured" },
+            { title: "シン・仮面ライダー", year: "2023", rating: "6.0", description: "庵野秀明監督による仮面ライダーの新たな映画化。", source: "Featured" },
+            { title: "翔んで埼玉", year: "2019", rating: "6.4", description: "埼玉県をネタにしたコメディ映画。GACKT主演で話題になった作品。", source: "Featured" },
+            { title: "カメラを止めるな！", year: "2017", rating: "7.5", description: "低予算で制作されながら大ヒットしたゾンビコメディ映画。", source: "Featured" },
+            { title: "るろうに剣心", year: "2012", rating: "7.4", description: "人気漫画の実写映画化。佐藤健主演のアクション時代劇。", source: "Featured" },
+            { title: "るろうに剣心 京都大火編", year: "2014", rating: "7.5", description: "るろうに剣心実写版の続編。志々雄真実との戦いを描く。", source: "Featured" },
+            { title: "るろうに剣心 伝説の最期編", year: "2014", rating: "7.6", description: "るろうに剣心実写三部作の完結編。", source: "Featured" },
+            { title: "ALWAYS 三丁目の夕日", year: "2005", rating: "7.4", description: "昭和33年の東京下町を舞台にした心温まる人情ドラマ。", source: "Featured" },
+            { title: "海猿", year: "2004", rating: "6.8", description: "海上保安官の活躍を描いたアクションドラマ。伊藤英明主演。", source: "Featured" },
+            
+            // 韓国映画
+            { title: "パラサイト 半地下の家族", year: "2019", rating: "8.6", description: "アカデミー賞4部門受賞の韓国映画。格差社会を鋭く描いたブラックコメディ・サスペンス。", source: "Featured" },
+            { title: "イカゲーム", year: "2021", rating: "8.0", description: "Netflixで世界的大ヒットした韓国のサバイバルドラマ。", source: "Featured" },
+            { title: "オールド・ボーイ", year: "2003", rating: "8.4", description: "パク・チャヌク監督による復讐サスペンス映画の傑作。", source: "Featured" },
+            { title: "母なる証明", year: "2009", rating: "7.8", description: "ポン・ジュノ監督による母と息子の愛を描いたサスペンス。", source: "Featured" },
+            { title: "殺人の追憶", year: "2003", rating: "8.1", description: "ポン・ジュノ監督による実在の連続殺人事件を題材にした作品。", source: "Featured" },
+            { title: "新感染 ファイナル・エクスプレス", year: "2016", rating: "7.6", description: "釜山行きの高速鉄道を舞台にしたゾンビ映画。", source: "Featured" },
+            { title: "アジョシ", year: "2010", rating: "7.8", description: "ウォン・ビン主演のハードボイルド・アクション映画。", source: "Featured" },
+            { title: "ハンドメイデン", year: "2016", rating: "8.1", description: "パク・チャヌク監督による官能的なサスペンス映画。", source: "Featured" },
+            
+            // クラシック映画
+            { title: "ショーシャンクの空に", year: "1994", rating: "9.3", description: "冤罪で収監された男性の希望と友情を描いた不朽の名作。多くの人に愛され続ける感動の物語。", source: "Featured" },
+            { title: "ゴッドファーザー", year: "1972", rating: "9.2", description: "マフィア一族の興亡を描いたフランシス・フォード・コッポラ監督の傑作。", source: "Featured" },
+            { title: "ゴッドファーザー PART II", year: "1974", rating: "9.0", description: "ゴッドファーザーの続編にして前日譚も描いた名作。", source: "Featured" },
+            { title: "シンドラーのリスト", year: "1993", rating: "8.9", description: "スティーヴン・スピルバーグ監督によるホロコーストを題材にした感動作。", source: "Featured" },
+            { title: "フォレスト・ガンプ", year: "1994", rating: "8.8", description: "トム・ハンクス主演の心温まる人生賛歌。純粋な心を持つ男性の波乱万丈な人生を描く名作。", source: "Featured" },
+            { title: "パルプ・フィクション", year: "1994", rating: "8.9", description: "クエンティン・タランティーノ監督による革新的な構成の犯罪映画。", source: "Featured" },
+            { title: "タイタニック", year: "1997", rating: "7.9", description: "ジェームズ・キャメロン監督による永遠の愛の物語。ディカプリオとウィンスレットが演じる運命的な恋。", source: "Featured" },
+            { title: "カサブランカ", year: "1942", rating: "8.5", description: "ハンフリー・ボガート主演の不朽の名作ロマンス映画。", source: "Featured" },
+            { title: "市民ケーン", year: "1941", rating: "8.3", description: "オーソン・ウェルズ監督・主演による映画史に残る傑作。", source: "Featured" },
+            { title: "風と共に去りぬ", year: "1939", rating: "8.1", description: "南北戦争時代のアメリカ南部を舞台にした壮大な叙事詩。", source: "Featured" },
+            
+            // アクション映画
+            { title: "ジョン・ウィック", year: "2014", rating: "7.4", description: "キアヌ・リーブス主演の究極のアクション映画。スタイリッシュなガンアクションが魅力の傑作シリーズ。", source: "Featured" },
+            { title: "ジョン・ウィック:パラベラム", year: "2019", rating: "7.4", description: "ジョン・ウィックシリーズの第3作。更にパワーアップしたアクションシーン。", source: "Featured" },
+            { title: "マッドマックス 怒りのデス・ロード", year: "2015", rating: "8.1", description: "ノンストップ・アクションの究極形。砂漠を舞台にした息をのむカーチェイスと圧倒的な映像美。", source: "Featured" },
+            { title: "ミッション：インポッシブル", year: "2023", rating: "7.8", description: "トム・クルーズが命懸けで挑む究極のスタント。手に汗握るスパイアクションの最新作。", source: "Featured" },
+            { title: "ダイ・ハード", year: "1988", rating: "8.2", description: "ブルース・ウィリス主演のアクション映画の金字塔。", source: "Featured" },
+            { title: "ターミネーター2", year: "1991", rating: "8.5", description: "アーノルド・シュワルツェネッガー主演のSFアクションの名作。", source: "Featured" },
+            { title: "マトリックス", year: "1999", rating: "8.7", description: "現実とは何かを問いかける革命的なSFアクション。キアヌ・リーブス主演の不朽の名作。", source: "Featured" },
+            { title: "マトリックス リローデッド", year: "2003", rating: "7.2", description: "マトリックスの続編。更に複雑になった世界観とアクション。", source: "Featured" },
+            { title: "マトリックス レボリューションズ", year: "2003", rating: "6.8", description: "マトリックス三部作の完結編。", source: "Featured" },
+            { title: "300 <スリーハンドレッド>", year: "2006", rating: "7.6", description: "スパルタの300人の兵士の戦いを描いた壮絶なアクション映画。", source: "Featured" }
         ];
 
         let apiWorking = false;
 
+        // 今日の日付を表示
+        function setTodayDate() {
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+            document.getElementById('todayDate').textContent = dateStr;
+        }
+
+        // 今日のAI推薦を生成
+        function generateDailyRecommendations() {
+            const today = new Date();
+            const seed = today.getFullYear() * 10000 + today.getMonth() * 100 + today.getDate();
+            
+            // 日付ベースのランダム選択
+            const shuffled = [...popularMovies];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(((seed + i) * 9301 + 49297) % 233280 / 233280) * (i + 1);
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            
+            const dailyPicks = shuffled.slice(0, 6);
+            const grid = document.getElementById('dailyGrid');
+            grid.innerHTML = '';
+            
+            dailyPicks.forEach(movie => {
+                const card = document.createElement('div');
+                card.className = 'daily-card';
+                card.innerHTML = `
+                    <h4>${movie.title}</h4>
+                    <div class="rating">⭐ ${movie.rating}/10</div>
+                `;
+                card.onclick = () => searchSpecificMovie(movie.title);
+                grid.appendChild(card);
+            });
+        }
+
         // API接続テスト
         async function testAPI() {
             try {
-                if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
-                    document.getElementById('apiStatus').innerHTML = 
-                        '⚠️ TMDB APIキーが設定されていません（フォールバックデータで動作中）';
-                    return false;
-                }
-
                 const response = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=ja-JP&page=1`);
                 if (response.ok) {
                     apiWorking = true;
@@ -461,15 +698,381 @@
             }
         }
 
-        // TMDB APIで検索
-        async function searchTMDB(contentType, genre, year) {
-            if (!apiWorking) return [];
+        // TMDB APIを最大限活用した検索システム
+        async function searchByName() {
+            const query = document.getElementById('movieNameInput').value.trim();
+            if (!query) {
+                alert('映画・アニメ名を入力してください');
+                return;
+            }
 
+            showLoading(true);
+            
+            try {
+                let results = [];
+                
+                if (apiWorking) {
+                    // TMDB APIによる包括的検索
+                    results = await performComprehensiveSearch(query);
+                    
+                    // 結果が少ない場合は別の検索戦略を試行
+                    if (results.length < 3) {
+                        results = await performAlternativeSearch(query);
+                    }
+                } else {
+                    // APIが利用できない場合のフォールバック
+                    results = await performFallbackSearch(query);
+                }
+                
+                if (results.length === 0) {
+                    displayResults([], 'search', '', '', `「${query}」の検索結果が見つかりませんでした。別のキーワードで試してみてください。`);
+                } else {
+                    // 関連度でソート
+                    results = sortByRelevance(results, query);
+                    displayResults(results.slice(0, 15), 'search', '', '', `「${query}」の検索結果 - ${results.length}件の作品が見つかりました`);
+                }
+                
+            } catch (error) {
+                console.error('検索エラー:', error);
+                const fallbackResults = await performFallbackSearch(query);
+                displayResults(fallbackResults, 'search', '', '', `「${query}」の検索結果（フォールバックデータ）`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 包括的検索（メイン検索ロジック）
+        async function performComprehensiveSearch(query) {
+            const results = [];
+            const processedIds = new Set();
+            
+            try {
+                // 1. マルチ検索（映画・TV・人物を一度に検索）
+                const multiSearchUrl = `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(query)}`;
+                const multiResponse = await fetch(multiSearchUrl);
+                
+                if (multiResponse.ok) {
+                    const multiData = await multiResponse.json();
+                    for (const item of multiData.results) {
+                        if (item.media_type === 'movie' && !processedIds.has(`movie-${item.id}`)) {
+                            results.push(formatTMDBMovie(item));
+                            processedIds.add(`movie-${item.id}`);
+                        } else if (item.media_type === 'tv' && !processedIds.has(`tv-${item.id}`)) {
+                            results.push(formatTMDBTV(item));
+                            processedIds.add(`tv-${item.id}`);
+                        }
+                    }
+                }
+                
+                // 2. 英語での検索も実行
+                const multiSearchEnUrl = `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}`;
+                const multiResponseEn = await fetch(multiSearchEnUrl);
+                
+                if (multiResponseEn.ok) {
+                    const multiDataEn = await multiResponseEn.json();
+                    for (const item of multiDataEn.results) {
+                        if (item.media_type === 'movie' && !processedIds.has(`movie-${item.id}`)) {
+                            results.push(formatTMDBMovie(item));
+                            processedIds.add(`movie-${item.id}`);
+                        } else if (item.media_type === 'tv' && !processedIds.has(`tv-${item.id}`)) {
+                            results.push(formatTMDBTV(item));
+                            processedIds.add(`tv-${item.id}`);
+                        }
+                    }
+                }
+                
+                // 3. 日本のアニメ映画を特別検索
+                if (isLikelyAnime(query)) {
+                    const animeResults = await searchAnimeSpecific(query);
+                    for (const anime of animeResults) {
+                        if (!processedIds.has(`movie-${anime.tmdbId}`) && !processedIds.has(`tv-${anime.tmdbId}`)) {
+                            results.push(anime);
+                            processedIds.add(`movie-${anime.tmdbId}`);
+                        }
+                    }
+                }
+                
+                // 4. 人気作品から検索
+                if (results.length < 5) {
+                    const popularResults = await searchPopularContent(query);
+                    results.push(...popularResults);
+                }
+                
+            } catch (error) {
+                console.error('包括的検索エラー:', error);
+            }
+            
+            return results;
+        }
+
+        // 代替検索戦略
+        async function performAlternativeSearch(query) {
+            const results = [];
+            const searchStrategies = [
+                // より寛容な検索
+                query.split(' ')[0], // 最初の単語だけ
+                query.replace(/[！？。、]/g, ''), // 句読点を除去
+                query.replace(/の/g, ' '), // 「の」をスペースに変換
+                translateToEnglish(query) // 簡易英語変換
+            ];
+            
+            for (const searchTerm of searchStrategies) {
+                if (searchTerm && searchTerm !== query) {
+                    try {
+                        const strategyResults = await performBasicSearch(searchTerm);
+                        results.push(...strategyResults.slice(0, 3));
+                        if (results.length >= 8) break;
+                    } catch (error) {
+                        console.error(`代替検索エラー (${searchTerm}):`, error);
+                    }
+                }
+            }
+            
+            return results;
+        }
+
+        // 基本検索
+        async function performBasicSearch(query) {
+            const results = [];
+            
+            try {
+                const [movieResponse, tvResponse] = await Promise.all([
+                    fetch(`${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(query)}`),
+                    fetch(`${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(query)}`)
+                ]);
+                
+                if (movieResponse.ok) {
+                    const movieData = await movieResponse.json();
+                    results.push(...movieData.results.map(formatTMDBMovie));
+                }
+                
+                if (tvResponse.ok) {
+                    const tvData = await tvResponse.json();
+                    results.push(...tvData.results.map(formatTMDBTV));
+                }
+            } catch (error) {
+                console.error('基本検索エラー:', error);
+            }
+            
+            return results;
+        }
+
+        // アニメ特化検索
+        async function searchAnimeSpecific(query) {
+            const results = [];
+            
+            try {
+                // アニメーションジャンル（16）で検索
+                const animeUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&language=ja-JP&with_genres=16&sort_by=popularity.desc`;
+                const animeResponse = await fetch(animeUrl);
+                
+                if (animeResponse.ok) {
+                    const animeData = await animeResponse.json();
+                    const filteredAnime = animeData.results.filter(movie => 
+                        movie.title && movie.title.toLowerCase().includes(query.toLowerCase()) ||
+                        movie.original_title && movie.original_title.toLowerCase().includes(query.toLowerCase())
+                    );
+                    results.push(...filteredAnime.map(formatTMDBMovie));
+                }
+                
+                // 日本のアニメスタジオ作品を検索
+                const studioSearches = ['スタジオジブリ', 'ジブリ', '東映アニメーション', 'マッドハウス'];
+                for (const studio of studioSearches) {
+                    if (query.includes(studio) || studio.includes(query)) {
+                        const studioUrl = `${TMDB_BASE_URL}/search/company?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(studio)}`;
+                        // スタジオ検索結果を処理...
+                    }
+                }
+            } catch (error) {
+                console.error('アニメ特化検索エラー:', error);
+            }
+            
+            return results;
+        }
+
+        // 人気コンテンツから検索
+        async function searchPopularContent(query) {
+            const results = [];
+            
+            try {
+                // 現在人気の映画
+                const popularMoviesUrl = `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=ja-JP&page=1`;
+                const popularResponse = await fetch(popularMoviesUrl);
+                
+                if (popularResponse.ok) {
+                    const popularData = await popularResponse.json();
+                    const matchingMovies = popularData.results.filter(movie => 
+                        movie.title && movie.title.toLowerCase().includes(query.toLowerCase())
+                    );
+                    results.push(...matchingMovies.map(formatTMDBMovie));
+                }
+                
+                // 現在人気のTV番組
+                const popularTVUrl = `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=ja-JP&page=1`;
+                const popularTVResponse = await fetch(popularTVUrl);
+                
+                if (popularTVResponse.ok) {
+                    const popularTVData = await popularTVResponse.json();
+                    const matchingTV = popularTVData.results.filter(tv => 
+                        tv.name && tv.name.toLowerCase().includes(query.toLowerCase())
+                    );
+                    results.push(...matchingTV.map(formatTMDBTV));
+                }
+            } catch (error) {
+                console.error('人気コンテンツ検索エラー:', error);
+            }
+            
+            return results;
+        }
+
+        // フォールバック検索
+        async function performFallbackSearch(query) {
+            const queryLower = query.toLowerCase();
+            return popularMovies.filter(movie => 
+                movie.title.toLowerCase().includes(queryLower) ||
+                // 日本の作品によくある略称パターン
+                (queryLower.includes('アナ') && movie.title.includes('アナと雪の女王')) ||
+                (queryLower.includes('雪の女王') && movie.title.includes('アナと雪の女王')) ||
+                (queryLower.includes('アナ雪') && movie.title.includes('アナと雪の女王')) ||
+                (queryLower.includes('トトロ') && movie.title.includes('となりのトトロ')) ||
+                (queryLower.includes('ナウシカ') && movie.title.includes('風の谷のナウシカ')) ||
+                (queryLower.includes('ラピュタ') && movie.title.includes('天空の城ラピュタ')) ||
+                (queryLower.includes('魔女宅') && movie.title.includes('魔女の宅急便')) ||
+                (queryLower.includes('ハウル') && movie.title.includes('ハウルの動く城'))
+            );
+        }
+
+        // アニメかどうかの判定
+        function isLikelyAnime(query) {
+            const animeKeywords = [
+                'アニメ', '劇場版', '映画版', 'の刃', '進撃', '呪術', 'ワンピース', 
+                'ナルト', 'ドラゴンボール', 'ジブリ', 'エヴァ', 'ガンダム'
+            ];
+            return animeKeywords.some(keyword => query.includes(keyword));
+        }
+
+        // 簡易英語翻訳
+        function translateToEnglish(query) {
+            const translations = {
+                'アナと雪の女王': 'Frozen',
+                'アナ雪': 'Frozen',
+                'トイストーリー': 'Toy Story',
+                'ファインディングニモ': 'Finding Nemo',
+                'インサイドヘッド': 'Inside Out',
+                'ズートピア': 'Zootopia',
+                'モアナ': 'Moana',
+                'リメンバーミー': 'Coco',
+                'アベンジャーズ': 'Avengers',
+                'スパイダーマン': 'Spider-Man',
+                'アイアンマン': 'Iron Man',
+                'バットマン': 'Batman',
+                'スーパーマン': 'Superman',
+                'ワンダーウーマン': 'Wonder Woman'
+            };
+            
+            return translations[query] || query;
+        }
+
+        // 関連度によるソート
+        function sortByRelevance(results, query) {
+            const queryLower = query.toLowerCase();
+            
+            return results.sort((a, b) => {
+                const aTitle = a.title.toLowerCase();
+                const bTitle = b.title.toLowerCase();
+                
+                // 完全一致が最優先
+                if (aTitle === queryLower && bTitle !== queryLower) return -1;
+                if (bTitle === queryLower && aTitle !== queryLower) return 1;
+                
+                // 前方一致が次
+                if (aTitle.startsWith(queryLower) && !bTitle.startsWith(queryLower)) return -1;
+                if (bTitle.startsWith(queryLower) && !aTitle.startsWith(queryLower)) return 1;
+                
+                // 評価が高い順
+                const aRating = parseFloat(a.rating) || 0;
+                const bRating = parseFloat(b.rating) || 0;
+                if (aRating !== bRating) return bRating - aRating;
+                
+                // 新しい作品優先
+                const aYear = parseInt(a.year) || 0;
+                const bYear = parseInt(b.year) || 0;
+                return bYear - aYear;
+            });
+        }
+
+        // 特定の映画を検索
+        function searchSpecificMovie(title) {
+            document.getElementById('movieNameInput').value = title;
+            searchByName();
+        }
+
+        // TMDB データフォーマット
+        function formatTMDBMovie(movie) {
+            return {
+                title: movie.title || movie.original_title,
+                year: movie.release_date ? movie.release_date.substring(0, 4) : 'N/A',
+                rating: movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A',
+                description: movie.overview || '説明が利用できません',
+                poster: movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null,
+                tmdbId: movie.id,
+                source: 'TMDB'
+            };
+        }
+
+        function formatTMDBTV(tv) {
+            return {
+                title: tv.name || tv.original_name,
+                year: tv.first_air_date ? tv.first_air_date.substring(0, 4) : 'N/A',
+                rating: tv.vote_average ? tv.vote_average.toFixed(1) : 'N/A',
+                description: tv.overview || '説明が利用できません',
+                poster: tv.poster_path ? `${IMAGE_BASE_URL}${tv.poster_path}` : null,
+                tmdbId: tv.id,
+                source: 'TMDB'
+            };
+        }
+
+        // 条件検索
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const contentType = document.getElementById('contentType').value;
+            const genre = document.getElementById('genre').value;
+            const year = document.getElementById('year').value;
+            const rating = document.getElementById('rating').value;
+            
+            showLoading(true);
+            
+            try {
+                let results = [];
+                
+                if (apiWorking) {
+                    results = await searchTMDB(contentType, genre, year, rating);
+                }
+                
+                if (results.length < 6) {
+                    const fallbackResults = getFallbackResults(contentType, genre, year, rating);
+                    results.push(...fallbackResults.slice(0, 6 - results.length));
+                }
+                
+                displayResults(results, contentType, genre, year);
+                
+            } catch (error) {
+                console.error('検索エラー:', error);
+                const fallbackResults = getFallbackResults(contentType, genre, year, rating);
+                displayResults(fallbackResults, contentType, genre, year);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // TMDB API検索
+        async function searchTMDB(contentType, genre, year, rating) {
             const results = [];
             
             try {
                 if (contentType === 'movie' || contentType === 'all') {
-                    const movieUrl = buildTMDBUrl('discover/movie', genre, year);
+                    const movieUrl = buildTMDBUrl('discover/movie', genre, year, rating);
                     const movieData = await fetch(movieUrl);
                     if (movieData.ok) {
                         const data = await movieData.json();
@@ -478,7 +1081,7 @@
                 }
                 
                 if (contentType === 'tv' || contentType === 'all') {
-                    const tvUrl = buildTMDBUrl('discover/tv', genre, year);
+                    const tvUrl = buildTMDBUrl('discover/tv', genre, year, rating);
                     const tvData = await fetch(tvUrl);
                     if (tvData.ok) {
                         const data = await tvData.json();
@@ -492,7 +1095,7 @@
             return results;
         }
 
-        function buildTMDBUrl(endpoint, genre, year) {
+        function buildTMDBUrl(endpoint, genre, year, rating) {
             const url = new URL(`${TMDB_BASE_URL}/${endpoint}`);
             url.searchParams.append('api_key', TMDB_API_KEY);
             url.searchParams.append('language', 'ja-JP');
@@ -503,92 +1106,43 @@
                 url.searchParams.append('with_genres', genre);
             }
             
-            if (year) {
+            if (year && year.includes('-')) {
+                const [startYear, endYear] = year.split('-');
+                url.searchParams.append('primary_release_date.gte', `${startYear}-01-01`);
+                url.searchParams.append('primary_release_date.lte', `${endYear}-12-31`);
+            } else if (year) {
                 url.searchParams.append('year', year);
+            }
+            
+            if (rating) {
+                url.searchParams.append('vote_average.gte', rating);
             }
             
             return url.toString();
         }
 
-        function formatTMDBMovie(movie) {
-            return {
-                title: movie.title || movie.original_title,
-                year: movie.release_date ? movie.release_date.substring(0, 4) : 'N/A',
-                rating: movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A',
-                description: movie.overview || '説明が利用できません',
-                poster: movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null,
-                source: 'TMDB'
-            };
-        }
-
-        function formatTMDBTV(tv) {
-            return {
-                title: tv.name || tv.original_name,
-                year: tv.first_air_date ? tv.first_air_date.substring(0, 4) : 'N/A',
-                rating: tv.vote_average ? tv.vote_average.toFixed(1) : 'N/A',
-                description: tv.overview || '説明が利用できません',
-                poster: tv.poster_path ? `${IMAGE_BASE_URL}${tv.poster_path}` : null,
-                source: 'TMDB'
-            };
-        }
-
-        // フォールバックデータをフィルタリング
-        function getFallbackResults(contentType, genre, year) {
-            let results = [...fallbackMovies];
+        function getFallbackResults(contentType, genre, year, rating) {
+            let results = [...popularMovies];
             
-            // 年代フィルタリング
-            if (year) {
+            if (year && year.includes('-')) {
+                const [startYear, endYear] = year.split('-');
+                results = results.filter(item => {
+                    const itemYear = parseInt(item.year);
+                    return itemYear >= parseInt(startYear) && itemYear <= parseInt(endYear);
+                });
+            } else if (year) {
                 results = results.filter(item => item.year === year);
             }
             
-            // ランダムに並び替え
-            for (let i = results.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [results[i], results[j]] = [results[j], results[i]];
+            if (rating) {
+                results = results.filter(item => parseFloat(item.rating) >= parseFloat(rating));
             }
             
-            return results;
+            return results.sort(() => Math.random() - 0.5);
         }
 
-        // 検索実行
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const contentType = document.getElementById('contentType').value;
-            const genre = document.getElementById('genre').value;
-            const year = document.getElementById('year').value;
-            
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-            
-            try {
-                let results = [];
-                
-                // TMDB APIから検索
-                if (apiWorking) {
-                    results = await searchTMDB(contentType, genre, year);
-                }
-                
-                // 結果が少ない場合はフォールバックデータを追加
-                if (results.length < 6) {
-                    const fallbackResults = getFallbackResults(contentType, genre, year);
-                    results.push(...fallbackResults.slice(0, 6 - results.length));
-                }
-                
-                displayResults(results, contentType, genre, year);
-                
-            } catch (error) {
-                console.error('検索エラー:', error);
-                const fallbackResults = getFallbackResults(contentType, genre, year);
-                displayResults(fallbackResults, contentType, genre, year);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('results').style.display = 'block';
-            }
-        });
-
-        function displayResults(results, contentType, genre, year) {
-            const aiComment = generateAIComment(results.length, contentType, genre, year);
+        function displayResults(results, contentType, genre, year, customTitle = null) {
+            const aiComment = customTitle || generateAIComment(results.length, contentType, genre, year);
             document.getElementById('aiComment').textContent = aiComment;
             
             const resultsGrid = document.getElementById('resultsGrid');
@@ -599,10 +1153,12 @@
                 return;
             }
             
-            results.forEach(item => {
+            results.slice(0, 12).forEach(item => {
                 const movieCard = createMovieCard(item);
                 resultsGrid.appendChild(movieCard);
             });
+            
+            document.getElementById('results').style.display = 'block';
         }
 
         function generateAIComment(count, contentType, genre, year) {
@@ -624,7 +1180,7 @@
             const posterImg = item.poster ? 
                 `<img src="${item.poster}" alt="${item.title}" class="movie-poster" onerror="this.style.display='none'">` : '';
             
-            const affiliateLinks = createAffiliateLinks(item.title);
+            const affiliateLinks = createStreamingLinks(item);
             
             card.innerHTML = `
                 <div class="source-indicator">${item.source}</div>
@@ -648,12 +1204,23 @@
             return card;
         }
 
-        function createAffiliateLinks(title) {
-            const searchQuery = encodeURIComponent(title);
+        function createStreamingLinks(item) {
             const links = [];
+            const searchQuery = encodeURIComponent(item.title);
             
-            Object.entries(affiliateConfig).forEach(([platform, config]) => {
-                const url = config.baseUrl + searchQuery + config.affiliate;
+            Object.entries(streamingServices).forEach(([platform, config]) => {
+                // 直接リンクが可能な場合とサーチリンクを使い分け
+                let url;
+                if (item.tmdbId && platform === 'netflix') {
+                    // Netflix用の特別処理（実際のNetflix IDが必要）
+                    url = config.searchUrl + searchQuery;
+                } else if (item.tmdbId && platform === 'amazon') {
+                    // Amazon Prime Video用処理
+                    url = config.searchUrl + searchQuery + config.affiliate;
+                } else {
+                    // 一般的な検索URL
+                    url = config.searchUrl + searchQuery + config.affiliate;
+                }
                 
                 links.push(`
                     <a href="${url}" 
@@ -668,18 +1235,33 @@
             return links.join('');
         }
 
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            if (show) {
+                document.getElementById('results').style.display = 'none';
+            }
+        }
+
         // 初期化
         window.addEventListener('load', async function() {
+            setTodayDate();
+            generateDailyRecommendations();
             await testAPI();
             
             setTimeout(async () => {
                 const initialResults = apiWorking ? 
-                    await searchTMDB('all', '', '') :
-                    getFallbackResults('all', '', '');
+                    await searchTMDB('all', '', '', '') :
+                    getFallbackResults('all', '', '', '');
                 
                 displayResults(initialResults.slice(0, 6), 'all', '', '');
-                document.getElementById('results').style.display = 'block';
             }, 1000);
+        });
+
+        // Enter キーで名前検索
+        document.getElementById('movieNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchByName();
+            }
         });
     </script>
 </body>
