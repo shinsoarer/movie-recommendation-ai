@@ -303,9 +303,15 @@
         .disney { background: #113cce; color: white; }
         .abema { background: #00d4ff; color: white; }
         
-        .affiliate-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        .available {
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .affiliate-btn.available::after {
+            content: ' ✓';
+            color: #00ff00;
+            font-weight: bold;
         }
         
         .ai-recommendation {
@@ -476,48 +482,48 @@
         const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w300';
         
-        // 配信サービス設定（直接リンク対応）
+        // 配信サービス設定（改良版 - 正確なURL対応）
         const streamingServices = {
             amazon: {
                 name: "Amazon Prime",
                 icon: "📺",
                 searchUrl: "https://www.amazon.co.jp/s?k=",
-                directUrl: "https://www.amazon.co.jp/dp/",
+                searchParams: "&i=instant-video&ref=sr_nr_n_1",
                 affiliate: "&tag=YOUR_AMAZON_ASSOCIATE_ID"
             },
             netflix: {
                 name: "Netflix",
                 icon: "🅽",
-                searchUrl: "https://www.netflix.com/search?q=",
-                directUrl: "https://www.netflix.com/title/",
+                searchUrl: "https://www.netflix.com/jp/title/",
+                fallbackUrl: "https://www.netflix.com/browse/genre/783",
                 affiliate: ""
             },
             unext: {
                 name: "U-NEXT",
-                icon: "🎬",
-                searchUrl: "https://video.unext.jp/search?query=",
-                directUrl: "https://video.unext.jp/title/",
+                icon: "🎬", 
+                searchUrl: "https://video.unext.jp/search/",
+                searchParams: "?query=",
                 affiliate: ""
             },
             hulu: {
                 name: "Hulu",
                 icon: "🟢",
-                searchUrl: "https://www.hulu.jp/search?q=",
-                directUrl: "https://www.hulu.jp/watch/",
+                searchUrl: "https://www.hulu.jp/search/",
+                searchParams: "?q=",
                 affiliate: ""
             },
             disney: {
                 name: "Disney+",
                 icon: "🏰",
-                searchUrl: "https://www.disneyplus.com/search?q=",
-                directUrl: "https://www.disneyplus.com/movies/",
+                searchUrl: "https://www.disneyplus.com/ja-jp/search/",
+                searchParams: "?q=",
                 affiliate: ""
             },
             abema: {
                 name: "ABEMA",
                 icon: "📱",
-                searchUrl: "https://abema.tv/search?q=",
-                directUrl: "https://abema.tv/video/title/",
+                searchUrl: "https://abema.tv/search/",
+                searchParams: "?q=",
                 affiliate: ""
             }
         };
